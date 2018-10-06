@@ -18,6 +18,7 @@ namespace Fururez.XrmToolbox.KeyChecker
     {
         public override IXrmToolBoxPluginControl GetControl()
         {
+            return new AlternateKeyManagerControl();
         }
     }
 }
