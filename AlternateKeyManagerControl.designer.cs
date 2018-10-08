@@ -27,6 +27,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AlternateKeyManagerControl));
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.toolButtonClose = new System.Windows.Forms.ToolStripButton();
@@ -48,6 +49,7 @@
             this.labelNames = new System.Windows.Forms.Label();
             this.labelNewName = new System.Windows.Forms.Label();
             this.comboBoxPrefixes = new System.Windows.Forms.ComboBox();
+            this.labelUnderscore = new System.Windows.Forms.Label();
             this.textNewKeyName = new System.Windows.Forms.TextBox();
             this.labelNewDisplayName = new System.Windows.Forms.Label();
             this.textNewKeyDisplayName = new System.Windows.Forms.TextBox();
@@ -73,7 +75,7 @@
             this.toolButtonDelete = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolButtonNew = new System.Windows.Forms.ToolStripButton();
-            this.labelUnderscore = new System.Windows.Forms.Label();
+            this.errorProviderNewKey = new System.Windows.Forms.ErrorProvider(this.components);
             this.toolStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitPanelsMain)).BeginInit();
             this.splitPanelsMain.Panel1.SuspendLayout();
@@ -85,6 +87,7 @@
             this.panelNewSaveCancel.SuspendLayout();
             this.panelKeyDetails.SuspendLayout();
             this.toolStripKeysCommands.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProviderNewKey)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStripMain
@@ -258,7 +261,7 @@
             this.buttonSaveNew.TabIndex = 21;
             this.buttonSaveNew.Text = "Save";
             this.buttonSaveNew.UseVisualStyleBackColor = true;
-            this.buttonSaveNew.Click += new System.EventHandler(this.buttonSaveNew_Click);
+            this.buttonSaveNew.Click += new System.EventHandler(this.ButtonSaveNew_Click);
             // 
             // labelNewLoadEntities
             // 
@@ -273,23 +276,23 @@
             // 
             this.EntityDropDown.Location = new System.Drawing.Point(9, 76);
             this.EntityDropDown.Name = "EntityDropDown";
-            this.EntityDropDown.Size = new System.Drawing.Size(322, 27);
+            this.EntityDropDown.Size = new System.Drawing.Size(309, 32);
             this.EntityDropDown.TabIndex = 19;
             this.EntityDropDown.LoadDataComplete += new System.EventHandler(this.EntityDropDown_LoadDataComplete);
             this.EntityDropDown.SelectedItemChanged += new System.EventHandler<Futurez.XrmToolbox.Controls.EntitiesDropdownControl.SelectedItemChangedEventArgs>(this.EntityDropDown_SelectedItemChanged);
             // 
             // labelNames
             // 
-            this.labelNames.Location = new System.Drawing.Point(9, 106);
+            this.labelNames.Location = new System.Drawing.Point(9, 111);
             this.labelNames.Name = "labelNames";
             this.labelNames.Padding = new System.Windows.Forms.Padding(3);
-            this.labelNames.Size = new System.Drawing.Size(321, 23);
+            this.labelNames.Size = new System.Drawing.Size(321, 36);
             this.labelNames.TabIndex = 25;
-            this.labelNames.Text = "Provide a Name and Display Names for the Alternate Key";
+            this.labelNames.Text = "Choose a Publisher prefix, Name, and Display Names for the Alternate Key";
             // 
             // labelNewName
             // 
-            this.labelNewName.Location = new System.Drawing.Point(9, 129);
+            this.labelNewName.Location = new System.Drawing.Point(9, 147);
             this.labelNewName.Name = "labelNewName";
             this.labelNewName.Padding = new System.Windows.Forms.Padding(3);
             this.labelNewName.Size = new System.Drawing.Size(82, 23);
@@ -300,24 +303,37 @@
             // 
             this.comboBoxPrefixes.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxPrefixes.FormattingEnabled = true;
-            this.comboBoxPrefixes.Location = new System.Drawing.Point(97, 132);
+            this.comboBoxPrefixes.Location = new System.Drawing.Point(97, 150);
             this.comboBoxPrefixes.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.comboBoxPrefixes.Name = "comboBoxPrefixes";
             this.comboBoxPrefixes.Size = new System.Drawing.Size(51, 21);
             this.comboBoxPrefixes.TabIndex = 32;
+            this.comboBoxPrefixes.ValueMemberChanged += new System.EventHandler(this.Input_ValueChanged);
+            this.comboBoxPrefixes.SelectedValueChanged += new System.EventHandler(this.Input_ValueChanged);
+            // 
+            // labelUnderscore
+            // 
+            this.labelUnderscore.Location = new System.Drawing.Point(148, 147);
+            this.labelUnderscore.Margin = new System.Windows.Forms.Padding(0);
+            this.labelUnderscore.Name = "labelUnderscore";
+            this.labelUnderscore.Size = new System.Drawing.Size(10, 23);
+            this.labelUnderscore.TabIndex = 33;
+            this.labelUnderscore.Text = "_";
+            this.labelUnderscore.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
             // textNewKeyName
             // 
-            this.textNewKeyName.Location = new System.Drawing.Point(158, 132);
+            this.textNewKeyName.Location = new System.Drawing.Point(158, 150);
             this.textNewKeyName.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
             this.textNewKeyName.MaxLength = 100;
             this.textNewKeyName.Name = "textNewKeyName";
             this.textNewKeyName.Size = new System.Drawing.Size(160, 20);
             this.textNewKeyName.TabIndex = 27;
+            this.textNewKeyName.TextChanged += new System.EventHandler(this.Input_ValueChanged);
             // 
             // labelNewDisplayName
             // 
-            this.labelNewDisplayName.Location = new System.Drawing.Point(9, 156);
+            this.labelNewDisplayName.Location = new System.Drawing.Point(9, 174);
             this.labelNewDisplayName.Name = "labelNewDisplayName";
             this.labelNewDisplayName.Padding = new System.Windows.Forms.Padding(3);
             this.labelNewDisplayName.Size = new System.Drawing.Size(82, 23);
@@ -326,15 +342,16 @@
             // 
             // textNewKeyDisplayName
             // 
-            this.textNewKeyDisplayName.Location = new System.Drawing.Point(97, 159);
+            this.textNewKeyDisplayName.Location = new System.Drawing.Point(97, 177);
             this.textNewKeyDisplayName.MaxLength = 100;
             this.textNewKeyDisplayName.Name = "textNewKeyDisplayName";
-            this.textNewKeyDisplayName.Size = new System.Drawing.Size(234, 20);
+            this.textNewKeyDisplayName.Size = new System.Drawing.Size(221, 20);
             this.textNewKeyDisplayName.TabIndex = 29;
+            this.textNewKeyDisplayName.TextChanged += new System.EventHandler(this.Input_ValueChanged);
             // 
             // labelNewSelectAttribs
             // 
-            this.labelNewSelectAttribs.Location = new System.Drawing.Point(9, 182);
+            this.labelNewSelectAttribs.Location = new System.Drawing.Point(9, 200);
             this.labelNewSelectAttribs.Name = "labelNewSelectAttribs";
             this.labelNewSelectAttribs.Padding = new System.Windows.Forms.Padding(3);
             this.labelNewSelectAttribs.Size = new System.Drawing.Size(321, 23);
@@ -344,11 +361,12 @@
             // listBoxAttrbutes
             // 
             this.listBoxAttrbutes.FormattingEnabled = true;
-            this.listBoxAttrbutes.Location = new System.Drawing.Point(9, 208);
+            this.listBoxAttrbutes.Location = new System.Drawing.Point(9, 226);
             this.listBoxAttrbutes.Name = "listBoxAttrbutes";
             this.listBoxAttrbutes.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.listBoxAttrbutes.Size = new System.Drawing.Size(322, 368);
+            this.listBoxAttrbutes.Size = new System.Drawing.Size(309, 368);
             this.listBoxAttrbutes.TabIndex = 31;
+            this.listBoxAttrbutes.SelectedIndexChanged += new System.EventHandler(this.Input_ValueChanged);
             // 
             // panelKeyDetails
             // 
@@ -551,15 +569,10 @@
             this.toolButtonNew.ToolTipText = "Create a new Alternate Key";
             this.toolButtonNew.Click += new System.EventHandler(this.ToolButtonNew_Click);
             // 
-            // labelUnderscore
+            // errorProviderNewKey
             // 
-            this.labelUnderscore.Location = new System.Drawing.Point(148, 129);
-            this.labelUnderscore.Margin = new System.Windows.Forms.Padding(0);
-            this.labelUnderscore.Name = "labelUnderscore";
-            this.labelUnderscore.Size = new System.Drawing.Size(10, 23);
-            this.labelUnderscore.TabIndex = 33;
-            this.labelUnderscore.Text = "_";
-            this.labelUnderscore.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.errorProviderNewKey.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.errorProviderNewKey.ContainerControl = this;
             // 
             // AlternateKeyManagerControl
             // 
@@ -585,6 +598,7 @@
             this.panelKeyDetails.ResumeLayout(false);
             this.toolStripKeysCommands.ResumeLayout(false);
             this.toolStripKeysCommands.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProviderNewKey)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -600,7 +614,30 @@
         private System.Windows.Forms.ColumnHeader colHeadKeyName;
         private System.Windows.Forms.ColumnHeader colHeadState;
         private System.Windows.Forms.ColumnHeader colHeadAttribs;
+        private System.Windows.Forms.ToolStrip toolStripKeysCommands;
+        private System.Windows.Forms.ToolStripButton toolButtonLoadSelected;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton toolButtonActivate;
+        private System.Windows.Forms.ToolStripButton toolButtonDelete;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton toolButtonNew;
+        private System.Windows.Forms.ErrorProvider errorProviderNewKey;
         private System.Windows.Forms.Panel panelEditPane;
+        private System.Windows.Forms.FlowLayoutPanel panelNewKey;
+        private System.Windows.Forms.Panel panelNewSaveCancel;
+        private System.Windows.Forms.Button buttonCancelNew;
+        private System.Windows.Forms.Button buttonSaveNew;
+        private System.Windows.Forms.Label labelNewLoadEntities;
+        private Futurez.XrmToolbox.Controls.EntitiesDropdownControl EntityDropDown;
+        private System.Windows.Forms.Label labelNames;
+        private System.Windows.Forms.Label labelNewName;
+        private System.Windows.Forms.ComboBox comboBoxPrefixes;
+        private System.Windows.Forms.Label labelUnderscore;
+        private System.Windows.Forms.TextBox textNewKeyName;
+        private System.Windows.Forms.Label labelNewDisplayName;
+        private System.Windows.Forms.TextBox textNewKeyDisplayName;
+        private System.Windows.Forms.Label labelNewSelectAttribs;
+        private System.Windows.Forms.ListBox listBoxAttrbutes;
         private System.Windows.Forms.FlowLayoutPanel panelKeyDetails;
         private System.Windows.Forms.Label labelKeyName;
         private System.Windows.Forms.Label labelKeyNameValue;
@@ -614,27 +651,5 @@
         private System.Windows.Forms.Label labelKeySchemaNameValue;
         private System.Windows.Forms.Label labelKeyMetadataId;
         private System.Windows.Forms.Label labelKeyMetadataIdValue;
-        private System.Windows.Forms.FlowLayoutPanel panelNewKey;
-        private Futurez.XrmToolbox.Controls.EntitiesDropdownControl EntityDropDown;
-        private System.Windows.Forms.ToolStrip toolStripKeysCommands;
-        private System.Windows.Forms.ToolStripButton toolButtonLoadSelected;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripButton toolButtonActivate;
-        private System.Windows.Forms.ToolStripButton toolButtonDelete;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton toolButtonNew;
-        private System.Windows.Forms.Label labelNewLoadEntities;
-        private System.Windows.Forms.Panel panelNewSaveCancel;
-        private System.Windows.Forms.Button buttonCancelNew;
-        private System.Windows.Forms.Button buttonSaveNew;
-        private System.Windows.Forms.Label labelNames;
-        private System.Windows.Forms.Label labelNewName;
-        private System.Windows.Forms.TextBox textNewKeyName;
-        private System.Windows.Forms.Label labelNewDisplayName;
-        private System.Windows.Forms.TextBox textNewKeyDisplayName;
-        private System.Windows.Forms.Label labelNewSelectAttribs;
-        private System.Windows.Forms.ListBox listBoxAttrbutes;
-        private System.Windows.Forms.ComboBox comboBoxPrefixes;
-        private System.Windows.Forms.Label labelUnderscore;
     }
 }

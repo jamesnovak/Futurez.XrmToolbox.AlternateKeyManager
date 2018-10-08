@@ -1,20 +1,16 @@
-﻿using System;
+﻿using Futurez.XrmToolbox.Controls;
+using McTools.Xrm.Connection;
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Metadata;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
-
-using Microsoft.Xrm.Sdk.Metadata;
-using Microsoft.Xrm.Sdk;
-
-using McTools.Xrm.Connection;
-
 using XrmToolBox.Extensibility;
-using XrmToolBox.Extensibility.Interfaces;
 using XrmToolBox.Extensibility.Args;
-
-using Futurez.XrmToolbox.Controls;
+using XrmToolBox.Extensibility.Interfaces;
 
 namespace Fururez.XrmToolbox.KeyChecker
 {
@@ -100,12 +96,13 @@ namespace Fururez.XrmToolbox.KeyChecker
 
         #endregion
 
+        #region Load and Retrieve methods
         /// <summary>
         /// Load the Alternate Key info for the selected Entitie 
         /// </summary>
         private void LoadSelectedEntityKeys() {
 
-            ToggleMainUIControls(false);
+            ToggleMainUIControlsEnabled(false);
             var selectedEntities = EntitiesListControl.CheckedEntities;
 
             WorkAsync(new WorkAsyncInfo {
@@ -145,10 +142,93 @@ namespace Fururez.XrmToolbox.KeyChecker
                     // now load up the list view with the keys 
                     PopulateKeysListView();
 
-                    ToggleMainUIControls(true);
+                    ToggleMainUIControlsEnabled(true);
                 }
             });
         }
+
+        /// <summary>
+        /// Populate the Alternate Key details pane
+        /// </summary>
+        private void PopulateNewKeyControls()
+        {
+            ToggleNewKeyPaneEnabled(false);
+            ToggleMainUIControlsEnabled(false);
+
+            // load the entities into the drop down control 
+            EntityDropDown.LoadData();
+
+            WorkAsync(new WorkAsyncInfo {
+                Message = "Retrieving Publishers",
+                AsyncArgument = null,
+                IsCancelable = true,
+                MessageWidth = 340,
+                MessageHeight = 150,
+                Work = (w, e) => {
+
+                    var entLogicalName = e.Argument as string;
+
+                    w.ReportProgress(0, $"Retrieving Publishers");
+
+                    var results = CrmActions.RetrievePublishers(Service);
+
+                    w.ReportProgress(100, $"Retrieving Publishers complete!");
+
+                    e.Result = results;
+                },
+                ProgressChanged = e => {
+                    SendMessageToStatusBar?.Invoke(this, new StatusBarMessageEventArgs(e.ProgressPercentage, e.UserState.ToString()));
+                },
+                PostWorkCallBack = e => {
+                    var pubs = e.Result as List<Entity>;
+                    comboBoxPrefixes.Items.Clear();
+
+                    // load the publishers 
+                    foreach (var pub in pubs) {
+                        comboBoxPrefixes.Items.Add(pub.Attributes["customizationprefix"]);
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// Retrieve the Attribute metadata for the given EntityLogicalName
+        /// </summary>
+        /// <param name="entityLogicalName"></param>
+        private void RetrieveEntityAttributes(string entityLogicalName)
+        {
+            // lock thing down
+            ToggleNewKeyPaneEnabled(false);
+
+            WorkAsync(new WorkAsyncInfo {
+                Message = "Retriveing Entity Attributes",
+                AsyncArgument = entityLogicalName,
+                IsCancelable = true,
+                MessageWidth = 340,
+                MessageHeight = 150,
+                Work = (w, e) => {
+
+                    var entLogicalName = e.Argument as string;
+
+                    w.ReportProgress(0, $"Retriveing Entity Attributes");
+
+                    var results = CrmActions.RetrieveEntity(Service, entLogicalName, true);
+
+                    w.ReportProgress(100, $"Retriveing Entity Attributes complete!");
+
+                    e.Result = results;
+                },
+                ProgressChanged = e => {
+                    SendMessageToStatusBar?.Invoke(this, new StatusBarMessageEventArgs(e.ProgressPercentage, e.UserState.ToString()));
+                },
+                PostWorkCallBack = e => {
+
+                    var entity = e.Result as EntityMetadata;
+                    PopulateEntityAttributes(entity);
+                }
+            });
+        }
+
 
         /// <summary>
         /// Load the Entities into the list view, binding the columns based on the control properties
@@ -161,13 +241,11 @@ namespace Fururez.XrmToolbox.KeyChecker
             ListViewKeyList.SuspendLayout();
             ListViewKeyList.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
-            if (_expandedEntities != null) 
-            {
+            if (_expandedEntities != null) {
                 // persist the list of list view items for the filtering
                 var lvItemsColl = new List<ListViewItem>();
 
-                foreach (var entity in _expandedEntities) 
-                {
+                foreach (var entity in _expandedEntities) {
                     if (entity.Keys.Length == 0)
                         continue;
 
@@ -178,8 +256,7 @@ namespace Fururez.XrmToolbox.KeyChecker
                     var grp = new ListViewGroup(entity.LogicalName, entityName);
                     ListViewKeyList.Groups.Add(grp);
 
-                    foreach (var key in entity.Keys) 
-                    {
+                    foreach (var key in entity.Keys) {
                         labels = key.DisplayName.LocalizedLabels;
                         var keyName = (labels.Count > 0) ? labels[0].Label : key.SchemaName;
 
@@ -203,6 +280,8 @@ namespace Fururez.XrmToolbox.KeyChecker
             }
             ListViewKeyList.ResumeLayout();
         }
+
+        #endregion
 
         /// <summary>
         /// Batch update those failed keys!
@@ -238,100 +317,34 @@ namespace Fururez.XrmToolbox.KeyChecker
                     }
 
                     // reload the list now that have made the call
-                    // BeginInvoke(new Action(LoadSelectedEntityKeys));
                     LoadSelectedEntityKeys();
                 }
             });
         }
 
         /// <summary>
-        /// Helper method to set the button states on the toolbar based on UIL selections 
+        /// 
         /// </summary>
-        private void UpdateKeysToolbar() {
-
-            var selectedCount = EntitiesListControl.CheckedEntities.Count;
-            bool enable = selectedCount > 0;
-            toolButtonLoadSelected.Enabled = enable;
-
-            selectedCount = ListViewKeyList.SelectedIndices.Count;
-            toolButtonActivate.Enabled = selectedCount > 0;
-            toolButtonDelete.Enabled = selectedCount == 1;
+        private void PopulateEntityAttributes() {
+            PopulateEntityAttributes(listBoxAttrbutes.Tag as EntityMetadata);
         }
-
-        /// <summary>
-        /// Populate the Key Details pane controls with the Key Info
-        /// </summary>
-        /// <param name="key"></param>
-        private void UpdateKeyDetailsPane(EntityKeyMetadata key)
-        {
-            labelKeyLogicalNameValue.Text = null;
-            labelKeyIsManagedValue.Text = null;
-            labelKeyMetadataIdValue.Text = null;
-            labelKeySchemaNameValue.Text = null;
-            labelKeyNameValue.Text = null;
-            labelKeyStatusValue.Text = null;
-
-            if (key != null) {
-                labelKeyNameValue.Text = CrmActions.GetLocalizedLabel(key.DisplayName, key.SchemaName);
-                labelKeyLogicalNameValue.Text = key.LogicalName;
-                labelKeySchemaNameValue.Text = key.SchemaName;
-                labelKeyStatusValue.Text = key.EntityKeyIndexStatus.ToString();
-                labelKeyIsManagedValue.Text = key.IsManaged.Value.ToString();
-                labelKeyMetadataIdValue.Text = key.MetadataId.Value.ToString("b");
-            }
-        }
-
-        /// <summary>
-        /// Toggle the display of the New Alternate Key pane
-        /// </summary>
-        /// <param name="showNewPane"></param>
-        private void ToggleNewKeyPane(bool showNewPane)
-        {
-            if (showNewPane) {
-                panelKeyDetails.SendToBack();
-                panelNewKey.BringToFront();
-            }
-            else {
-                panelKeyDetails.BringToFront();
-                panelNewKey.SendToBack();
-            }
-        }
-
-        /// <summary>
-        /// Helper method to lock down the new Key Pane when stuff loads
-        /// </summary>
-        /// <param name="enabled"></param>
-        private void ToggleNewKeyPaneEnabled(bool enabled)
-        {
-            textNewKeyDisplayName.Enabled = enabled;
-            textNewKeyName.Enabled = enabled;
-            listBoxAttrbutes.Enabled = enabled;
-            buttonSaveNew.Enabled = enabled;
-            buttonCancelNew.Enabled = enabled;
-            EntityDropDown.Enabled = enabled;
-        }
-
-        private void ToggleMainUIControls(bool enable) {
-
-            ToggleNewKeyPane(enable);
-            UpdateKeysToolbar();
-            ListViewKeyList.Enabled = enable;
-            EntitiesListControl.Enabled = enable;
-        }
-
         /// <summary>
         /// Load the list of attributes that are allowed to be included as keys
         /// </summary>
-        /// <param name="attributes"></param>
-        private void PopulateEntityAttributes(List<AttributeMetadata> attributes)
+        /// <param name="entity"></param>
+        private void PopulateEntityAttributes(EntityMetadata entity)
         {
+            // save the entity reference so we can do some validation. 
+            listBoxAttrbutes.Tag = entity;
+
             listBoxAttrbutes.Items.Clear();
             listBoxAttrbutes.DisplayMember = "Name";
 
+            var attributes = entity.Attributes.ToList();
+
             if (attributes != null) {
 
-                // MessageBox.Show(attributes.Count.ToString());
-                // only allowed certain types 
+                // only allowed certain types: 
                 // https://docs.microsoft.com/en-us/dynamics365/customer-engagement/developer/define-alternate-keys-entity
                 var allowed = attributes.Where(a =>
                         (a is DecimalAttributeMetadata) 
@@ -342,9 +355,7 @@ namespace Fururez.XrmToolbox.KeyChecker
                         // ||(a is PicklistAttributeMetadata)
                         );
 
-                // MessageBox.Show(allowed.ToList().Count.ToString());
                 // add the items to the checked list 
-
                 foreach (var attrib in allowed) 
                 {
                     if ((attrib.AttributeOf == null) && (attrib.AttributeType != AttributeTypeCode.Virtual)) {
@@ -354,50 +365,21 @@ namespace Fururez.XrmToolbox.KeyChecker
                                 SchemaName = attrib.SchemaName
                             });
                     }
-                }                
+                }        
             }
+
+            // reenable 
+            ToggleNewKeyPaneEnabled(true);
+
+            ValidateNewKeyInputs(true);
         }
 
-        /// <summary>
-        /// Retrieve the Attribute metadata for the given EntityLogicalName
-        /// </summary>
-        /// <param name="entityLogicalName"></param>
-        private void RetrieveEntityAttributes(string entityLogicalName)
-        {
-            WorkAsync(new WorkAsyncInfo {
-                Message = "Retriveing Entity Attributes",
-                AsyncArgument = entityLogicalName,
-                IsCancelable = true,
-                MessageWidth = 340,
-                MessageHeight = 150,
-                Work = (w, e) => {
-
-                    var entLogicalName = e.Argument as string;
-
-                    w.ReportProgress(0, $"Retriveing Entity Attributes");
-
-                    var results = CrmActions.RetrieveEntityAttributes(Service, entLogicalName);
-
-                    w.ReportProgress(100, $"Retriveing Entity Attributes complete!");
-
-                    e.Result = results;
-                },
-                ProgressChanged = e => {
-                    SendMessageToStatusBar?.Invoke(this, new StatusBarMessageEventArgs(e.ProgressPercentage, e.UserState.ToString()));
-                },
-                PostWorkCallBack = e => {
-                    var attributes = e.Result as List<AttributeMetadata>;
-
-                    PopulateEntityAttributes(attributes);
-                }
-            });
-        }
         #region Control events
 
         private void ButtonCancelNew_Click(object sender, EventArgs e)
         {
             ToggleNewKeyPane(false);
-            ToggleNewKeyPaneEnabled(false);
+            ToggleNewKeyPaneEnabled(false, true);
         }
 
         private void EntitiesListControl_CheckedItemsChanged(object sender, EventArgs e)
@@ -416,7 +398,7 @@ namespace Fururez.XrmToolbox.KeyChecker
             EntitiesListControl.CheckEntities(_mySettings.CheckedEntityNames);
             EntitiesListControl.FilterEntitiesList(_mySettings.EntityListFilter);
 
-            ToggleMainUIControls(true);
+            ToggleMainUIControlsEnabled(true);
 
         }
         private void ToolButtonLoadSelected_Click(object sender, EventArgs e)
@@ -467,80 +449,64 @@ namespace Fururez.XrmToolbox.KeyChecker
         private void ToolButtonNew_Click(object sender, EventArgs args)
         {
             if (EntityDropDown.AllEntities.Count == 0) {
-
-                ToggleNewKeyPaneEnabled(false);
-                ToggleMainUIControls(false);
-
-                // load the entities into the drop down control 
-                EntityDropDown.LoadData();
-
-                WorkAsync(new WorkAsyncInfo {
-                    Message = "Retrieving Publishers",
-                    AsyncArgument = null,
-                    IsCancelable = true,
-                    MessageWidth = 340,
-                    MessageHeight = 150,
-                    Work = (w, e) => {
-
-                        var entLogicalName = e.Argument as string;
-
-                        w.ReportProgress(0, $"Retrieving Publishers");
-
-                        var results = CrmActions.RetrievePublishers(Service);
-
-                        w.ReportProgress(100, $"Retrieving Publishers complete!");
-
-                        e.Result = results;
-                    },
-                    ProgressChanged = e => {
-                        SendMessageToStatusBar?.Invoke(this, new StatusBarMessageEventArgs(e.ProgressPercentage, e.UserState.ToString()));
-                    },
-                    PostWorkCallBack = e => {
-                        var pubs = e.Result as List<Entity>;
-                        comboBoxPrefixes.Items.Clear();
-                        // load the publishers 
-                        foreach (var pub in pubs) {
-                            comboBoxPrefixes.Items.Add(pub.Attributes["customizationprefix"]);
-                        }
-
-                        ToggleNewKeyPaneEnabled(true);
-                        ToggleMainUIControls(true);
-                    }
-                });
+                PopulateNewKeyControls();
             }
             else {
+
+                PopulateEntityAttributes();
+
                 ToggleNewKeyPaneEnabled(true);
-                ToggleMainUIControls(true);
+                ToggleMainUIControlsEnabled(true);
             }
 
             ToggleNewKeyPane(true);
         }
 
         /// <summary>
-        /// 
+        /// Delete selected Keys
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ToolButtonDelete_Click(object sender, EventArgs e)
         {
-            var selected = ListViewKeyList.SelectedItems;
-            var key = selected[0].Tag as EntityKeyMetadata;
-            var message = $"Are you sure you would like to delete Alternate Key {CrmActions.GetLocalizedLabel(key.DisplayName, key.SchemaName)}?" +
+            // get the selected item from the list 
+            var items = ListViewKeyList.SelectedItems;
+            var approveMessage = new StringBuilder();
+            var keys = new List<EntityKeyMetadata>();
+
+            foreach (ListViewItem item in items) {
+                var key = item.Tag as EntityKeyMetadata;
+                var keyName = CrmActions.GetLocalizedLabel(key.DisplayName, key.SchemaName);
+                keys.Add(key);
+                approveMessage.AppendLine($"\t{keyName}");
+            }
+
+            var message = $"Are you sure you would like to delete Alternate Key(s)?\n{approveMessage.ToString()}?" +
                 $"\nNOTE: This cannot be undone!";
+
             if (MessageBox.Show(this, message, "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 
-                CrmActions.DeleteEntityKey(Service, key);
+                CrmActions.DeleteEntityKey(Service, keys);
 
                 LoadSelectedEntityKeys();
             }
         }
 
+        /// <summary>
+        /// Load of the Entities list is complete, so update the UI accordingly 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EntityDropDown_LoadDataComplete(object sender, EventArgs e)
         {
-            // update the New Key panel
-            ToggleNewKeyPaneEnabled(true);
+            ToggleMainUIControlsEnabled(true);
         }
 
+        /// <summary>
+        /// Selected entity changed, so update the Attributes list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EntityDropDown_SelectedItemChanged(object sender, EntitiesDropdownControl.SelectedItemChangedEventArgs e)
         {
             if (e.Entity != null) {
@@ -548,12 +514,17 @@ namespace Fururez.XrmToolbox.KeyChecker
             }
         }
 
-        private void buttonSaveNew_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Save the new key!
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ButtonSaveNew_Click(object sender, EventArgs e)
         {
-            // TODO validate!
-            // textNewKeyName.Text -- length > 0
-            // textNewKeyDisplayName.Text -- length > 0
-            // listBoxAttrbutes -- sel items > 0
+            ValidateNewKeyInputs(false);
+            if (!AllowSaveNewKey())
+                return;
+
             if (MessageBox.Show(this, "Create new Alternate Key?", "Confirm Create", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
 
                 var ent = EntityDropDown.SelectedEntity;
@@ -565,10 +536,27 @@ namespace Fururez.XrmToolbox.KeyChecker
 
                 var newName = $"{comboBoxPrefixes.SelectedItem}_{textNewKeyName.Text}";
 
-                CrmActions.CreateEntityKey(Service, ent.LogicalName, newName, textNewKeyDisplayName.Text, attributes);
+                var errors = CrmActions.CreateEntityKey(Service, ent.LogicalName, newName, textNewKeyDisplayName.Text, attributes);
+
+                if (errors != null) {
+                    MessageBox.Show(this, errors, "Error Creating Key", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                ToggleNewKeyPane(false);
+                ToggleNewKeyPaneEnabled(false, true);
 
                 LoadSelectedEntityKeys();
             }
+        }
+
+        /// <summary>
+        /// Shared method for edit controls on change events
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Input_ValueChanged(object sender, EventArgs e)
+        {
+            ValidateNewKeyInputs(false);
         }
         #endregion
 
@@ -579,6 +567,149 @@ namespace Fururez.XrmToolbox.KeyChecker
             public string Name { get; set; }
             public string SchemaName { get; set; }
         }
+        #endregion
+
+        #region UI Helper methods 
+
+        /// <summary>
+        /// Check to see if it's ok to Save the new Alternate Key
+        /// </summary>
+        /// <returns></returns>
+        private bool AllowSaveNewKey()
+        {
+            bool allowSave = false;
+
+            allowSave = string.IsNullOrEmpty(errorProviderNewKey.GetError(textNewKeyDisplayName)) &&
+                        string.IsNullOrEmpty(errorProviderNewKey.GetError(textNewKeyName)) &&
+                        string.IsNullOrEmpty(errorProviderNewKey.GetError(listBoxAttrbutes)) &&
+                        string.IsNullOrEmpty(errorProviderNewKey.GetError(comboBoxPrefixes)) &&
+                        string.IsNullOrEmpty(errorProviderNewKey.GetError(EntityDropDown));
+
+            buttonSaveNew.Enabled = allowSave;
+
+            return allowSave;
+        }
+
+
+        /// <summary>
+        /// Validate the new Alternate Key inputs before saving
+        /// </summary>
+        /// <param name="entityOnly"></param>
+        private void ValidateNewKeyInputs(bool entityOnly)
+        {
+            errorProviderNewKey.Clear();
+
+            if (!entityOnly) {
+                if (string.IsNullOrEmpty(textNewKeyName.Text)) {
+                    errorProviderNewKey.SetError(textNewKeyName, "Name is required");
+                }
+
+                if (string.IsNullOrEmpty(textNewKeyDisplayName.Text)) {
+                    errorProviderNewKey.SetError(textNewKeyDisplayName, "Display Name is required");
+                }
+
+                if (string.IsNullOrEmpty(comboBoxPrefixes.SelectedItem as string)) {
+                    errorProviderNewKey.SetError(comboBoxPrefixes, "Prefix is required");
+                }
+
+                if (listBoxAttrbutes.SelectedItems.Count == 0) {
+                    errorProviderNewKey.SetError(listBoxAttrbutes, "Select at least one Attribute for the key");
+                }
+            }
+
+            var entity = listBoxAttrbutes.Tag as EntityMetadata;
+
+            if (entity != null) {
+                if (entity.Keys.Length == 5) {
+                    errorProviderNewKey.SetError(EntityDropDown, "Maximum number of keys set for the Entity");
+                }
+            }
+
+            AllowSaveNewKey();
+        }
+
+        /// <summary>
+        /// Helper method to set the button states on the toolbar based on UIL selections 
+        /// </summary>
+        private void UpdateKeysToolbar()
+        {
+
+            var selectedCount = EntitiesListControl.CheckedEntities.Count;
+            bool enable = selectedCount > 0;
+            toolButtonLoadSelected.Enabled = enable;
+
+            selectedCount = ListViewKeyList.SelectedIndices.Count;
+            toolButtonActivate.Enabled = selectedCount > 0;
+            toolButtonDelete.Enabled = selectedCount > 0;
+        }
+
+        /// <summary>
+        /// Populate the Key Details pane controls with the Key Info
+        /// </summary>
+        /// <param name="key"></param>
+        private void UpdateKeyDetailsPane(EntityKeyMetadata key)
+        {
+            labelKeyLogicalNameValue.Text = null;
+            labelKeyIsManagedValue.Text = null;
+            labelKeyMetadataIdValue.Text = null;
+            labelKeySchemaNameValue.Text = null;
+            labelKeyNameValue.Text = null;
+            labelKeyStatusValue.Text = null;
+
+            if (key != null) {
+                labelKeyNameValue.Text = CrmActions.GetLocalizedLabel(key.DisplayName, key.SchemaName);
+                labelKeyLogicalNameValue.Text = key.LogicalName;
+                labelKeySchemaNameValue.Text = key.SchemaName;
+                labelKeyStatusValue.Text = key.EntityKeyIndexStatus.ToString();
+                labelKeyIsManagedValue.Text = key.IsManaged.Value.ToString();
+                labelKeyMetadataIdValue.Text = key.MetadataId.Value.ToString("b");
+            }
+        }
+
+        /// <summary>
+        /// Toggle the display of the New Alternate Key pane
+        /// </summary>
+        /// <param name="showNewPane"></param>
+        private void ToggleNewKeyPane(bool showNewPane)
+        {
+            if (showNewPane) {
+                panelKeyDetails.SendToBack();
+                panelNewKey.BringToFront();
+            }
+            else {
+                panelKeyDetails.BringToFront();
+                panelNewKey.SendToBack();
+            }
+        }
+
+        /// <summary>
+        /// Helper method to lock down the new Key Pane when stuff loads
+        /// </summary>
+        /// <param name="enabled"></param>
+        private void ToggleNewKeyPaneEnabled(bool enabled, bool clearAttribs = false)
+        {
+            textNewKeyDisplayName.Enabled = enabled;
+            textNewKeyName.Enabled = enabled;
+            listBoxAttrbutes.Enabled = enabled;
+            buttonCancelNew.Enabled = enabled;
+
+            buttonSaveNew.Enabled = enabled;
+            EntityDropDown.Enabled = enabled;
+
+            if (clearAttribs) {
+                listBoxAttrbutes.Items.Clear();
+            }
+        }
+
+        private void ToggleMainUIControlsEnabled(bool enable)
+        {
+
+            ToggleNewKeyPaneEnabled(enable);
+            UpdateKeysToolbar();
+            ListViewKeyList.Enabled = enable;
+            EntitiesListControl.Enabled = enable;
+        }
+
         #endregion
 
     }
