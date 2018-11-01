@@ -1,4 +1,4 @@
-﻿namespace Fururez.XrmToolbox.KeyChecker
+﻿namespace Futurez.XrmToolbox
 {
     partial class AlternateKeyManagerControl
     {
@@ -32,6 +32,8 @@
             this.toolStripMain = new System.Windows.Forms.ToolStrip();
             this.toolButtonClose = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolButtonSaveSettings = new System.Windows.Forms.ToolStripButton();
+            this.toolButtonLoadSettings = new System.Windows.Forms.ToolStripButton();
             this.splitPanelsMain = new System.Windows.Forms.SplitContainer();
             this.EntitiesListControl = new Futurez.XrmToolbox.Controls.EntitiesListControl();
             this.tableLayoutMain = new System.Windows.Forms.TableLayoutPanel();
@@ -40,6 +42,21 @@
             this.colHeadState = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colHeadAttribs = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panelEditPane = new System.Windows.Forms.Panel();
+            this.panelKeyDetails = new System.Windows.Forms.FlowLayoutPanel();
+            this.labelKeyName = new System.Windows.Forms.Label();
+            this.labelKeyNameValue = new System.Windows.Forms.Label();
+            this.labelKeyStatus = new System.Windows.Forms.Label();
+            this.labelKeyStatusValue = new System.Windows.Forms.Label();
+            this.labelKeyIsManaged = new System.Windows.Forms.Label();
+            this.labelKeyIsManagedValue = new System.Windows.Forms.Label();
+            this.labelKeyLogicalName = new System.Windows.Forms.Label();
+            this.labelKeyLogicalNameValue = new System.Windows.Forms.Label();
+            this.labelKeySchemaName = new System.Windows.Forms.Label();
+            this.labelKeySchemaNameValue = new System.Windows.Forms.Label();
+            this.labelKeyMetadataId = new System.Windows.Forms.Label();
+            this.labelKeyMetadataIdValue = new System.Windows.Forms.Label();
+            this.labelScheduledJob = new System.Windows.Forms.Label();
+            this.labelScheduledJobValue = new System.Windows.Forms.Label();
             this.panelNewKey = new System.Windows.Forms.FlowLayoutPanel();
             this.panelNewSaveCancel = new System.Windows.Forms.Panel();
             this.buttonCancelNew = new System.Windows.Forms.Button();
@@ -55,19 +72,6 @@
             this.textNewKeyDisplayName = new System.Windows.Forms.TextBox();
             this.labelNewSelectAttribs = new System.Windows.Forms.Label();
             this.listBoxAttrbutes = new System.Windows.Forms.ListBox();
-            this.panelKeyDetails = new System.Windows.Forms.FlowLayoutPanel();
-            this.labelKeyName = new System.Windows.Forms.Label();
-            this.labelKeyNameValue = new System.Windows.Forms.Label();
-            this.labelKeyStatus = new System.Windows.Forms.Label();
-            this.labelKeyStatusValue = new System.Windows.Forms.Label();
-            this.labelKeyIsManaged = new System.Windows.Forms.Label();
-            this.labelKeyIsManagedValue = new System.Windows.Forms.Label();
-            this.labelKeyLogicalName = new System.Windows.Forms.Label();
-            this.labelKeyLogicalNameValue = new System.Windows.Forms.Label();
-            this.labelKeySchemaName = new System.Windows.Forms.Label();
-            this.labelKeySchemaNameValue = new System.Windows.Forms.Label();
-            this.labelKeyMetadataId = new System.Windows.Forms.Label();
-            this.labelKeyMetadataIdValue = new System.Windows.Forms.Label();
             this.toolStripKeysCommands = new System.Windows.Forms.ToolStrip();
             this.toolButtonLoadSelected = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
@@ -75,6 +79,7 @@
             this.toolButtonDelete = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolButtonNew = new System.Windows.Forms.ToolStripButton();
+            this.toolLabelSummary = new System.Windows.Forms.ToolStripLabel();
             this.errorProviderNewKey = new System.Windows.Forms.ErrorProvider(this.components);
             this.toolStripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitPanelsMain)).BeginInit();
@@ -83,9 +88,9 @@
             this.splitPanelsMain.SuspendLayout();
             this.tableLayoutMain.SuspendLayout();
             this.panelEditPane.SuspendLayout();
+            this.panelKeyDetails.SuspendLayout();
             this.panelNewKey.SuspendLayout();
             this.panelNewSaveCancel.SuspendLayout();
-            this.panelKeyDetails.SuspendLayout();
             this.toolStripKeysCommands.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderNewKey)).BeginInit();
             this.SuspendLayout();
@@ -96,12 +101,13 @@
             this.toolStripMain.ImageScalingSize = new System.Drawing.Size(18, 18);
             this.toolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolButtonClose,
-            this.toolStripSeparator1});
+            this.toolStripSeparator1,
+            this.toolButtonSaveSettings,
+            this.toolButtonLoadSettings});
             this.toolStripMain.Location = new System.Drawing.Point(0, 0);
             this.toolStripMain.Name = "toolStripMain";
             this.toolStripMain.Size = new System.Drawing.Size(1003, 25);
             this.toolStripMain.TabIndex = 7;
-            this.toolStripMain.Text = "toolStrip1";
             // 
             // toolButtonClose
             // 
@@ -115,6 +121,25 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolButtonSaveSettings
+            // 
+            this.toolButtonSaveSettings.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonSaveSettings.Image")));
+            this.toolButtonSaveSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolButtonSaveSettings.Name = "toolButtonSaveSettings";
+            this.toolButtonSaveSettings.Size = new System.Drawing.Size(98, 22);
+            this.toolButtonSaveSettings.Text = "Save Settings";
+            this.toolButtonSaveSettings.ToolTipText = "Save your current selection and filter settings";
+            this.toolButtonSaveSettings.Click += new System.EventHandler(this.toolButtonSaveSettings_Click);
+            // 
+            // toolButtonLoadSettings
+            // 
+            this.toolButtonLoadSettings.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonLoadSettings.Image")));
+            this.toolButtonLoadSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolButtonLoadSettings.Name = "toolButtonLoadSettings";
+            this.toolButtonLoadSettings.Size = new System.Drawing.Size(100, 22);
+            this.toolButtonLoadSettings.Text = "Load Settings";
+            this.toolButtonLoadSettings.Click += new System.EventHandler(this.ToolButtonLoadSettings_Click);
             // 
             // splitPanelsMain
             // 
@@ -164,7 +189,7 @@
             this.tableLayoutMain.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutMain.Name = "tableLayoutMain";
             this.tableLayoutMain.RowCount = 2;
-            this.tableLayoutMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 36F));
+            this.tableLayoutMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 461F));
             this.tableLayoutMain.Size = new System.Drawing.Size(666, 626);
             this.tableLayoutMain.TabIndex = 9;
@@ -177,9 +202,9 @@
             this.colHeadAttribs});
             this.ListViewKeyList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ListViewKeyList.FullRowSelect = true;
-            this.ListViewKeyList.Location = new System.Drawing.Point(3, 39);
+            this.ListViewKeyList.Location = new System.Drawing.Point(3, 33);
             this.ListViewKeyList.Name = "ListViewKeyList";
-            this.ListViewKeyList.Size = new System.Drawing.Size(310, 584);
+            this.ListViewKeyList.Size = new System.Drawing.Size(310, 590);
             this.ListViewKeyList.TabIndex = 21;
             this.ListViewKeyList.UseCompatibleStateImageBehavior = false;
             this.ListViewKeyList.View = System.Windows.Forms.View.Details;
@@ -202,13 +227,177 @@
             // 
             // panelEditPane
             // 
-            this.panelEditPane.Controls.Add(this.panelNewKey);
             this.panelEditPane.Controls.Add(this.panelKeyDetails);
+            this.panelEditPane.Controls.Add(this.panelNewKey);
             this.panelEditPane.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelEditPane.Location = new System.Drawing.Point(319, 39);
+            this.panelEditPane.Location = new System.Drawing.Point(319, 33);
             this.panelEditPane.Name = "panelEditPane";
-            this.panelEditPane.Size = new System.Drawing.Size(344, 584);
+            this.panelEditPane.Size = new System.Drawing.Size(344, 590);
             this.panelEditPane.TabIndex = 20;
+            // 
+            // panelKeyDetails
+            // 
+            this.panelKeyDetails.Controls.Add(this.labelKeyName);
+            this.panelKeyDetails.Controls.Add(this.labelKeyNameValue);
+            this.panelKeyDetails.Controls.Add(this.labelKeyStatus);
+            this.panelKeyDetails.Controls.Add(this.labelKeyStatusValue);
+            this.panelKeyDetails.Controls.Add(this.labelKeyIsManaged);
+            this.panelKeyDetails.Controls.Add(this.labelKeyIsManagedValue);
+            this.panelKeyDetails.Controls.Add(this.labelKeyLogicalName);
+            this.panelKeyDetails.Controls.Add(this.labelKeyLogicalNameValue);
+            this.panelKeyDetails.Controls.Add(this.labelKeySchemaName);
+            this.panelKeyDetails.Controls.Add(this.labelKeySchemaNameValue);
+            this.panelKeyDetails.Controls.Add(this.labelKeyMetadataId);
+            this.panelKeyDetails.Controls.Add(this.labelKeyMetadataIdValue);
+            this.panelKeyDetails.Controls.Add(this.labelScheduledJob);
+            this.panelKeyDetails.Controls.Add(this.labelScheduledJobValue);
+            this.panelKeyDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelKeyDetails.Location = new System.Drawing.Point(0, 0);
+            this.panelKeyDetails.Margin = new System.Windows.Forms.Padding(6);
+            this.panelKeyDetails.Name = "panelKeyDetails";
+            this.panelKeyDetails.Padding = new System.Windows.Forms.Padding(6);
+            this.panelKeyDetails.Size = new System.Drawing.Size(344, 590);
+            this.panelKeyDetails.TabIndex = 0;
+            // 
+            // labelKeyName
+            // 
+            this.labelKeyName.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelKeyName.Location = new System.Drawing.Point(10, 10);
+            this.labelKeyName.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyName.Name = "labelKeyName";
+            this.labelKeyName.Size = new System.Drawing.Size(93, 23);
+            this.labelKeyName.TabIndex = 0;
+            this.labelKeyName.Text = "Name:";
+            this.labelKeyName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelKeyNameValue
+            // 
+            this.labelKeyNameValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelKeyNameValue.Location = new System.Drawing.Point(111, 10);
+            this.labelKeyNameValue.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyNameValue.Name = "labelKeyNameValue";
+            this.labelKeyNameValue.Size = new System.Drawing.Size(220, 23);
+            this.labelKeyNameValue.TabIndex = 1;
+            // 
+            // labelKeyStatus
+            // 
+            this.labelKeyStatus.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelKeyStatus.Location = new System.Drawing.Point(10, 41);
+            this.labelKeyStatus.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyStatus.Name = "labelKeyStatus";
+            this.labelKeyStatus.Size = new System.Drawing.Size(93, 23);
+            this.labelKeyStatus.TabIndex = 2;
+            this.labelKeyStatus.Text = "Status:";
+            this.labelKeyStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelKeyStatusValue
+            // 
+            this.labelKeyStatusValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelKeyStatusValue.Location = new System.Drawing.Point(111, 41);
+            this.labelKeyStatusValue.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyStatusValue.Name = "labelKeyStatusValue";
+            this.labelKeyStatusValue.Size = new System.Drawing.Size(220, 23);
+            this.labelKeyStatusValue.TabIndex = 3;
+            // 
+            // labelKeyIsManaged
+            // 
+            this.labelKeyIsManaged.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelKeyIsManaged.Location = new System.Drawing.Point(10, 72);
+            this.labelKeyIsManaged.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyIsManaged.Name = "labelKeyIsManaged";
+            this.labelKeyIsManaged.Size = new System.Drawing.Size(93, 23);
+            this.labelKeyIsManaged.TabIndex = 4;
+            this.labelKeyIsManaged.Text = "Is Managed:";
+            this.labelKeyIsManaged.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelKeyIsManagedValue
+            // 
+            this.labelKeyIsManagedValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelKeyIsManagedValue.Location = new System.Drawing.Point(111, 72);
+            this.labelKeyIsManagedValue.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyIsManagedValue.Name = "labelKeyIsManagedValue";
+            this.labelKeyIsManagedValue.Size = new System.Drawing.Size(220, 23);
+            this.labelKeyIsManagedValue.TabIndex = 5;
+            // 
+            // labelKeyLogicalName
+            // 
+            this.labelKeyLogicalName.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelKeyLogicalName.Location = new System.Drawing.Point(10, 103);
+            this.labelKeyLogicalName.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyLogicalName.Name = "labelKeyLogicalName";
+            this.labelKeyLogicalName.Size = new System.Drawing.Size(93, 23);
+            this.labelKeyLogicalName.TabIndex = 6;
+            this.labelKeyLogicalName.Text = "Logical Name:";
+            this.labelKeyLogicalName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelKeyLogicalNameValue
+            // 
+            this.labelKeyLogicalNameValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelKeyLogicalNameValue.Location = new System.Drawing.Point(111, 103);
+            this.labelKeyLogicalNameValue.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyLogicalNameValue.Name = "labelKeyLogicalNameValue";
+            this.labelKeyLogicalNameValue.Size = new System.Drawing.Size(220, 23);
+            this.labelKeyLogicalNameValue.TabIndex = 7;
+            // 
+            // labelKeySchemaName
+            // 
+            this.labelKeySchemaName.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelKeySchemaName.Location = new System.Drawing.Point(10, 134);
+            this.labelKeySchemaName.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeySchemaName.Name = "labelKeySchemaName";
+            this.labelKeySchemaName.Size = new System.Drawing.Size(93, 23);
+            this.labelKeySchemaName.TabIndex = 10;
+            this.labelKeySchemaName.Text = "Schema Name:";
+            this.labelKeySchemaName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelKeySchemaNameValue
+            // 
+            this.labelKeySchemaNameValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelKeySchemaNameValue.Location = new System.Drawing.Point(111, 134);
+            this.labelKeySchemaNameValue.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeySchemaNameValue.Name = "labelKeySchemaNameValue";
+            this.labelKeySchemaNameValue.Size = new System.Drawing.Size(220, 23);
+            this.labelKeySchemaNameValue.TabIndex = 11;
+            // 
+            // labelKeyMetadataId
+            // 
+            this.labelKeyMetadataId.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelKeyMetadataId.Location = new System.Drawing.Point(10, 165);
+            this.labelKeyMetadataId.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyMetadataId.Name = "labelKeyMetadataId";
+            this.labelKeyMetadataId.Size = new System.Drawing.Size(93, 23);
+            this.labelKeyMetadataId.TabIndex = 12;
+            this.labelKeyMetadataId.Text = "Metadata Id:";
+            this.labelKeyMetadataId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelKeyMetadataIdValue
+            // 
+            this.labelKeyMetadataIdValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelKeyMetadataIdValue.Location = new System.Drawing.Point(111, 165);
+            this.labelKeyMetadataIdValue.Margin = new System.Windows.Forms.Padding(4);
+            this.labelKeyMetadataIdValue.Name = "labelKeyMetadataIdValue";
+            this.labelKeyMetadataIdValue.Size = new System.Drawing.Size(220, 23);
+            this.labelKeyMetadataIdValue.TabIndex = 13;
+            // 
+            // labelScheduledJob
+            // 
+            this.labelScheduledJob.Dock = System.Windows.Forms.DockStyle.Left;
+            this.labelScheduledJob.Location = new System.Drawing.Point(10, 196);
+            this.labelScheduledJob.Margin = new System.Windows.Forms.Padding(4);
+            this.labelScheduledJob.Name = "labelScheduledJob";
+            this.labelScheduledJob.Size = new System.Drawing.Size(93, 23);
+            this.labelScheduledJob.TabIndex = 14;
+            this.labelScheduledJob.Text = "Scheduled Job:";
+            this.labelScheduledJob.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // labelScheduledJobValue
+            // 
+            this.labelScheduledJobValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelScheduledJobValue.Location = new System.Drawing.Point(111, 196);
+            this.labelScheduledJobValue.Margin = new System.Windows.Forms.Padding(4);
+            this.labelScheduledJobValue.Name = "labelScheduledJobValue";
+            this.labelScheduledJobValue.Size = new System.Drawing.Size(220, 23);
+            this.labelScheduledJobValue.TabIndex = 15;
             // 
             // panelNewKey
             // 
@@ -228,7 +417,7 @@
             this.panelNewKey.Location = new System.Drawing.Point(0, 0);
             this.panelNewKey.Name = "panelNewKey";
             this.panelNewKey.Padding = new System.Windows.Forms.Padding(6);
-            this.panelNewKey.Size = new System.Drawing.Size(344, 584);
+            this.panelNewKey.Size = new System.Drawing.Size(344, 590);
             this.panelNewKey.TabIndex = 1;
             // 
             // panelNewSaveCancel
@@ -368,142 +557,6 @@
             this.listBoxAttrbutes.TabIndex = 31;
             this.listBoxAttrbutes.SelectedIndexChanged += new System.EventHandler(this.Input_ValueChanged);
             // 
-            // panelKeyDetails
-            // 
-            this.panelKeyDetails.Controls.Add(this.labelKeyName);
-            this.panelKeyDetails.Controls.Add(this.labelKeyNameValue);
-            this.panelKeyDetails.Controls.Add(this.labelKeyStatus);
-            this.panelKeyDetails.Controls.Add(this.labelKeyStatusValue);
-            this.panelKeyDetails.Controls.Add(this.labelKeyIsManaged);
-            this.panelKeyDetails.Controls.Add(this.labelKeyIsManagedValue);
-            this.panelKeyDetails.Controls.Add(this.labelKeyLogicalName);
-            this.panelKeyDetails.Controls.Add(this.labelKeyLogicalNameValue);
-            this.panelKeyDetails.Controls.Add(this.labelKeySchemaName);
-            this.panelKeyDetails.Controls.Add(this.labelKeySchemaNameValue);
-            this.panelKeyDetails.Controls.Add(this.labelKeyMetadataId);
-            this.panelKeyDetails.Controls.Add(this.labelKeyMetadataIdValue);
-            this.panelKeyDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelKeyDetails.Location = new System.Drawing.Point(0, 0);
-            this.panelKeyDetails.Margin = new System.Windows.Forms.Padding(6);
-            this.panelKeyDetails.Name = "panelKeyDetails";
-            this.panelKeyDetails.Padding = new System.Windows.Forms.Padding(6);
-            this.panelKeyDetails.Size = new System.Drawing.Size(344, 584);
-            this.panelKeyDetails.TabIndex = 0;
-            // 
-            // labelKeyName
-            // 
-            this.labelKeyName.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelKeyName.Location = new System.Drawing.Point(10, 10);
-            this.labelKeyName.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyName.Name = "labelKeyName";
-            this.labelKeyName.Size = new System.Drawing.Size(80, 23);
-            this.labelKeyName.TabIndex = 0;
-            this.labelKeyName.Text = "Name:";
-            // 
-            // labelKeyNameValue
-            // 
-            this.labelKeyNameValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelKeyNameValue.Location = new System.Drawing.Point(98, 10);
-            this.labelKeyNameValue.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyNameValue.Name = "labelKeyNameValue";
-            this.labelKeyNameValue.Size = new System.Drawing.Size(232, 23);
-            this.labelKeyNameValue.TabIndex = 1;
-            // 
-            // labelKeyStatus
-            // 
-            this.labelKeyStatus.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelKeyStatus.Location = new System.Drawing.Point(10, 41);
-            this.labelKeyStatus.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyStatus.Name = "labelKeyStatus";
-            this.labelKeyStatus.Size = new System.Drawing.Size(80, 23);
-            this.labelKeyStatus.TabIndex = 2;
-            this.labelKeyStatus.Text = "Status:";
-            // 
-            // labelKeyStatusValue
-            // 
-            this.labelKeyStatusValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelKeyStatusValue.Location = new System.Drawing.Point(98, 41);
-            this.labelKeyStatusValue.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyStatusValue.Name = "labelKeyStatusValue";
-            this.labelKeyStatusValue.Size = new System.Drawing.Size(232, 23);
-            this.labelKeyStatusValue.TabIndex = 3;
-            // 
-            // labelKeyIsManaged
-            // 
-            this.labelKeyIsManaged.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelKeyIsManaged.Location = new System.Drawing.Point(10, 72);
-            this.labelKeyIsManaged.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyIsManaged.Name = "labelKeyIsManaged";
-            this.labelKeyIsManaged.Size = new System.Drawing.Size(80, 23);
-            this.labelKeyIsManaged.TabIndex = 4;
-            this.labelKeyIsManaged.Text = "Is Managed:";
-            // 
-            // labelKeyIsManagedValue
-            // 
-            this.labelKeyIsManagedValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelKeyIsManagedValue.Location = new System.Drawing.Point(98, 72);
-            this.labelKeyIsManagedValue.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyIsManagedValue.Name = "labelKeyIsManagedValue";
-            this.labelKeyIsManagedValue.Size = new System.Drawing.Size(232, 23);
-            this.labelKeyIsManagedValue.TabIndex = 5;
-            // 
-            // labelKeyLogicalName
-            // 
-            this.labelKeyLogicalName.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelKeyLogicalName.Location = new System.Drawing.Point(10, 103);
-            this.labelKeyLogicalName.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyLogicalName.Name = "labelKeyLogicalName";
-            this.labelKeyLogicalName.Size = new System.Drawing.Size(80, 23);
-            this.labelKeyLogicalName.TabIndex = 6;
-            this.labelKeyLogicalName.Text = "Logical Name:";
-            // 
-            // labelKeyLogicalNameValue
-            // 
-            this.labelKeyLogicalNameValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelKeyLogicalNameValue.Location = new System.Drawing.Point(98, 103);
-            this.labelKeyLogicalNameValue.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyLogicalNameValue.Name = "labelKeyLogicalNameValue";
-            this.labelKeyLogicalNameValue.Size = new System.Drawing.Size(232, 23);
-            this.labelKeyLogicalNameValue.TabIndex = 7;
-            // 
-            // labelKeySchemaName
-            // 
-            this.labelKeySchemaName.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelKeySchemaName.Location = new System.Drawing.Point(10, 134);
-            this.labelKeySchemaName.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeySchemaName.Name = "labelKeySchemaName";
-            this.labelKeySchemaName.Size = new System.Drawing.Size(80, 23);
-            this.labelKeySchemaName.TabIndex = 10;
-            this.labelKeySchemaName.Text = "Schema Name:";
-            // 
-            // labelKeySchemaNameValue
-            // 
-            this.labelKeySchemaNameValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelKeySchemaNameValue.Location = new System.Drawing.Point(98, 134);
-            this.labelKeySchemaNameValue.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeySchemaNameValue.Name = "labelKeySchemaNameValue";
-            this.labelKeySchemaNameValue.Size = new System.Drawing.Size(232, 23);
-            this.labelKeySchemaNameValue.TabIndex = 11;
-            // 
-            // labelKeyMetadataId
-            // 
-            this.labelKeyMetadataId.Dock = System.Windows.Forms.DockStyle.Left;
-            this.labelKeyMetadataId.Location = new System.Drawing.Point(10, 165);
-            this.labelKeyMetadataId.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyMetadataId.Name = "labelKeyMetadataId";
-            this.labelKeyMetadataId.Size = new System.Drawing.Size(80, 23);
-            this.labelKeyMetadataId.TabIndex = 12;
-            this.labelKeyMetadataId.Text = "Metadata Id:";
-            // 
-            // labelKeyMetadataIdValue
-            // 
-            this.labelKeyMetadataIdValue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.labelKeyMetadataIdValue.Location = new System.Drawing.Point(98, 165);
-            this.labelKeyMetadataIdValue.Margin = new System.Windows.Forms.Padding(4);
-            this.labelKeyMetadataIdValue.Name = "labelKeyMetadataIdValue";
-            this.labelKeyMetadataIdValue.Size = new System.Drawing.Size(232, 23);
-            this.labelKeyMetadataIdValue.TabIndex = 13;
-            // 
             // toolStripKeysCommands
             // 
             this.tableLayoutMain.SetColumnSpan(this.toolStripKeysCommands, 2);
@@ -514,14 +567,16 @@
             this.toolButtonActivate,
             this.toolButtonDelete,
             this.toolStripSeparator3,
-            this.toolButtonNew});
+            this.toolButtonNew,
+            this.toolLabelSummary});
             this.toolStripKeysCommands.Location = new System.Drawing.Point(0, 0);
             this.toolStripKeysCommands.Name = "toolStripKeysCommands";
-            this.toolStripKeysCommands.Size = new System.Drawing.Size(666, 36);
+            this.toolStripKeysCommands.Size = new System.Drawing.Size(666, 30);
             this.toolStripKeysCommands.TabIndex = 16;
             // 
             // toolButtonLoadSelected
             // 
+            this.toolButtonLoadSelected.AutoSize = false;
             this.toolButtonLoadSelected.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonLoadSelected.Image")));
             this.toolButtonLoadSelected.Name = "toolButtonLoadSelected";
             this.toolButtonLoadSelected.Size = new System.Drawing.Size(80, 33);
@@ -532,10 +587,11 @@
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 36);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 30);
             // 
             // toolButtonActivate
             // 
+            this.toolButtonActivate.AutoSize = false;
             this.toolButtonActivate.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonActivate.Image")));
             this.toolButtonActivate.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButtonActivate.Name = "toolButtonActivate";
@@ -545,6 +601,7 @@
             // 
             // toolButtonDelete
             // 
+            this.toolButtonDelete.AutoSize = false;
             this.toolButtonDelete.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonDelete.Image")));
             this.toolButtonDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButtonDelete.Name = "toolButtonDelete";
@@ -556,11 +613,12 @@
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 36);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 30);
             // 
             // toolButtonNew
             // 
             this.toolButtonNew.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolButtonNew.AutoSize = false;
             this.toolButtonNew.Image = ((System.Drawing.Image)(resources.GetObject("toolButtonNew.Image")));
             this.toolButtonNew.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolButtonNew.Name = "toolButtonNew";
@@ -568,6 +626,11 @@
             this.toolButtonNew.Text = "New Alternate Key";
             this.toolButtonNew.ToolTipText = "Create a new Alternate Key";
             this.toolButtonNew.Click += new System.EventHandler(this.ToolButtonNew_Click);
+            // 
+            // toolLabelSummary
+            // 
+            this.toolLabelSummary.Name = "toolLabelSummary";
+            this.toolLabelSummary.Size = new System.Drawing.Size(0, 27);
             // 
             // errorProviderNewKey
             // 
@@ -592,10 +655,10 @@
             this.tableLayoutMain.ResumeLayout(false);
             this.tableLayoutMain.PerformLayout();
             this.panelEditPane.ResumeLayout(false);
+            this.panelKeyDetails.ResumeLayout(false);
             this.panelNewKey.ResumeLayout(false);
             this.panelNewKey.PerformLayout();
             this.panelNewSaveCancel.ResumeLayout(false);
-            this.panelKeyDetails.ResumeLayout(false);
             this.toolStripKeysCommands.ResumeLayout(false);
             this.toolStripKeysCommands.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderNewKey)).EndInit();
@@ -651,5 +714,10 @@
         private System.Windows.Forms.Label labelKeySchemaNameValue;
         private System.Windows.Forms.Label labelKeyMetadataId;
         private System.Windows.Forms.Label labelKeyMetadataIdValue;
+        private System.Windows.Forms.ToolStripButton toolButtonSaveSettings;
+        private System.Windows.Forms.Label labelScheduledJob;
+        private System.Windows.Forms.Label labelScheduledJobValue;
+        private System.Windows.Forms.ToolStripButton toolButtonLoadSettings;
+        private System.Windows.Forms.ToolStripLabel toolLabelSummary;
     }
 }

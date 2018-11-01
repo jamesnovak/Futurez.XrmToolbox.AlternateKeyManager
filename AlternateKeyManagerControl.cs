@@ -1,28 +1,41 @@
-﻿using Futurez.XrmToolbox.Controls;
-using McTools.Xrm.Connection;
-using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Metadata;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
+using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Metadata;
+
 using XrmToolBox.Extensibility;
 using XrmToolBox.Extensibility.Args;
 using XrmToolBox.Extensibility.Interfaces;
 
-namespace Fururez.XrmToolbox.KeyChecker
+using McTools.Xrm.Connection;
+
+using Futurez.XrmToolbox.Controls;
+
+namespace Futurez.XrmToolbox
 {
-    public partial class AlternateKeyManagerControl : PluginControlBase, IStatusBarMessenger
+    public partial class AlternateKeyManagerControl : PluginControlBase, IStatusBarMessenger, IGitHubPlugin, IHelpPlugin, IPayPalPlugin
     {
         private Settings _mySettings;
 
         // List of entities whose Keys have been loaded
         private List<EntityMetadata> _expandedEntities = new List<EntityMetadata>();
+
         public event EventHandler<StatusBarMessageEventArgs> SendMessageToStatusBar;
 
-        // private delegate void PopulateEntityAttributesDelegate(List<AttributeMetadata> attributes);
+        public string HelpUrl => Properties.Resources.github_help_url;
+
+        public string RepositoryName => Properties.Resources.github_repo_name;
+
+        public string UserName => Properties.Resources.github_user;
+
+        public string DonationDescription => Properties.Resources.paypal_message;
+
+        public string EmailAccount => Properties.Resources.paypal_email;
 
         #region Plugin general methods 
         public AlternateKeyManagerControl()
@@ -45,29 +58,19 @@ namespace Fururez.XrmToolbox.KeyChecker
             UpdateKeysToolbar();
             ToggleNewKeyPane(false);
             ToggleNewKeyPaneEnabled(false);
-
-            // Loads or creates the settings for the plugin
-            if (!SettingsManager.Instance.TryLoad(GetType(), out _mySettings)) {
-                _mySettings = new Settings();
-                LogWarning("Settings not found => a new settings file has been created!");
-            }
-            else {
-                LogInfo("Settings found and loaded");
-            }
         }
 
+        /// <summary>
+        /// Close the control
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void ToolButtonClose_Click(object sender, EventArgs args)
         {
-            _mySettings.CheckedEntityNames = EntitiesListControl.CheckedEntities.Select(e => e.SchemaName).ToList();
-            _mySettings.EntityListFilter = EntitiesListControl.ListFilterString;
-
+            if (MessageBox.Show(this, "Would you like to save your current Entity selection and filter text?", "Confirm Save Settings", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question) == DialogResult.Yes) {
+            }
             SaveSettings();
             CloseTool();
-        }
-
-        private void SaveSettings()
-        {
-            SettingsManager.Instance.Save(GetType(), _mySettings);
         }
 
         /// <summary>
@@ -88,10 +91,22 @@ namespace Fururez.XrmToolbox.KeyChecker
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
 
+            // update the connection and clear out the related data
+            EntitiesListControl.UpdateConnection(Service);
+            EntityDropDown.UpdateConnection(Service);
+            ClearSelectedEntitiesList();
+
+
             if (_mySettings != null && detail != null) {
                 _mySettings.LastUsedOrganizationWebappUrl = detail.WebApplicationUrl;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
+        }
+
+        private void ClearSelectedEntitiesList()
+        {
+            _expandedEntities.Clear();
+            PopulateKeysListView();
         }
 
         #endregion
@@ -241,10 +256,10 @@ namespace Fururez.XrmToolbox.KeyChecker
             ListViewKeyList.SuspendLayout();
             ListViewKeyList.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
-            if (_expandedEntities != null) {
+            if (_expandedEntities.Count > 0) {
                 // persist the list of list view items for the filtering
                 var lvItemsColl = new List<ListViewItem>();
-
+                var entityCount = 0;
                 foreach (var entity in _expandedEntities) {
                     if (entity.Keys.Length == 0)
                         continue;
@@ -274,7 +289,11 @@ namespace Fururez.XrmToolbox.KeyChecker
 
                         lvItemsColl.Add(lvItem);
                     }
+
+                    toolLabelSummary.Text = $"Loaded Entities: {++entityCount}, Total Keys: {lvItemsColl.Count}";
                 }
+
+
                 ListViewKeyList.Items.AddRange(lvItemsColl.ToArray<ListViewItem>());
                 ListViewKeyList.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
             }
@@ -323,7 +342,7 @@ namespace Fururez.XrmToolbox.KeyChecker
         }
 
         /// <summary>
-        /// 
+        /// Load the entity attributes into the list 
         /// </summary>
         private void PopulateEntityAttributes() {
             PopulateEntityAttributes(listBoxAttrbutes.Tag as EntityMetadata);
@@ -350,7 +369,7 @@ namespace Fururez.XrmToolbox.KeyChecker
                         (a is DecimalAttributeMetadata) 
                         || (a is IntegerAttributeMetadata) 
                         || (a is StringAttributeMetadata) 
-                        // || (a is DateTimeAttributeMetadata) // these blow up!
+                        // || (a is DateTimeAttributeMetadata) // these will be available in v9.1
                         // || (a is LookupAttributeMetadata) 
                         // ||(a is PicklistAttributeMetadata)
                         );
@@ -360,7 +379,7 @@ namespace Fururez.XrmToolbox.KeyChecker
                 {
                     if ((attrib.AttributeOf == null) && (attrib.AttributeType != AttributeTypeCode.Virtual)) {
 
-                        listBoxAttrbutes.Items.Add(new CheckedItem() {
+                        listBoxAttrbutes.Items.Add(new AttributeListItem() {
                                 Name = $"{CrmActions.GetLocalizedLabel(attrib.DisplayName, attrib.SchemaName)} ({attrib.SchemaName})",
                                 SchemaName = attrib.SchemaName
                             });
@@ -376,36 +395,87 @@ namespace Fururez.XrmToolbox.KeyChecker
 
         #region Control events
 
+        /// <summary>
+        /// Load the saved settings 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ToolButtonLoadSettings_Click(object sender, EventArgs e)
+        {
+            ApplySavedSettings();
+        }
+
+        /// <summary>
+        /// Save the current selection settings to the common settings
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolButtonSaveSettings_Click(object sender, EventArgs e)
+        {
+            SaveSettings();
+        }
+
+        /// <summary>
+        /// Cancel the New Alternate Key action 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ButtonCancelNew_Click(object sender, EventArgs e)
         {
             ToggleNewKeyPane(false);
             ToggleNewKeyPaneEnabled(false, true);
         }
 
+        /// <summary>
+        /// Handle the event when the list of Checked Items has changed, update the available actions from the toolbar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EntitiesListControl_CheckedItemsChanged(object sender, EventArgs e)
         {
             UpdateKeysToolbar();
         }
 
+        /// <summary>
+        /// Handle the event when the list of Checked Items has changed, update the available actions from the toolbar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EntitiesListControl_SelectedItemChanged(object sender, EntitiesListControl.SelectedItemChangedEventArgs e)
         {
             UpdateKeysToolbar();
         }
 
+        /// <summary>
+        /// Now that the data has been loaded in the Entities List control, apply the saved settings
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EntitiesListControl_LoadDataComplete(object sender, EventArgs e)
         {
             // load the settings.
-            EntitiesListControl.CheckEntities(_mySettings.CheckedEntityNames);
-            EntitiesListControl.FilterEntitiesList(_mySettings.EntityListFilter);
-
             ToggleMainUIControlsEnabled(true);
 
+            ClearSelectedEntitiesList();
+
+            ApplySavedSettings();
         }
+
+        /// <summary>
+        /// Load the Alternate Keys for the list of selected Entities
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ToolButtonLoadSelected_Click(object sender, EventArgs e)
         {
             LoadSelectedEntityKeys();
         }
 
+        /// <summary>
+        /// Update the other UI elements now that the selected Alternate Key has changed 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ListViewKeyList_SelectedIndexChanged(object sender, EventArgs e)
         {
             EntityKeyMetadata key = null;
@@ -421,6 +491,11 @@ namespace Fururez.XrmToolbox.KeyChecker
             UpdateKeyDetailsPane(key);
         }
 
+        /// <summary>
+        /// Activate the FAILED Alternate Keys
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ToolButtonActivate_Click(object sender, EventArgs e)
         {
             // get the selected item from the list 
@@ -446,6 +521,12 @@ namespace Fururez.XrmToolbox.KeyChecker
                 }
             }
         }
+
+        /// <summary>
+        /// Kick off the process to crate a new Alternate Key
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void ToolButtonNew_Click(object sender, EventArgs args)
         {
             if (EntityDropDown.AllEntities.Count == 0) {
@@ -529,9 +610,9 @@ namespace Fururez.XrmToolbox.KeyChecker
 
                 var ent = EntityDropDown.SelectedEntity;
                 var attributes = new List<string>();
-
+                // grab the list of schema names from the list box
                 foreach (var item in listBoxAttrbutes.SelectedItems) {
-                    attributes.Add(((CheckedItem)item).SchemaName.ToLower());
+                    attributes.Add(item.ToString().ToLower());
                 }
 
                 var newName = $"{comboBoxPrefixes.SelectedItem}_{textNewKeyName.Text}";
@@ -562,10 +643,58 @@ namespace Fururez.XrmToolbox.KeyChecker
 
         #region Helpers
 
-        private class CheckedItem
+        /// <summary>
+        /// Load your saved settings 
+        /// </summary>
+        private void LoadSettings()
+        {
+            // Loads or creates the settings for the plugin
+            if (!SettingsManager.Instance.TryLoad(GetType(), out _mySettings)) {
+                _mySettings = new Settings();
+                LogWarning("Settings not found => a new settings file has been created!");
+            }
+            else {
+                LogInfo("Settings found and loaded");
+            }
+        }
+
+        /// <summary>
+        /// Save current Selection, filter string, sort to your settings
+        /// </summary>
+        private void SaveSettings()
+        {
+            _mySettings.CheckedEntityNames = EntitiesListControl.CheckedEntities.Select(e => e.SchemaName.ToLower()).ToList();
+            _mySettings.EntityListFilter = EntitiesListControl.ListFilterString;
+            _mySettings.ListSortColumn = EntitiesListControl.ListSortColumn;
+            _mySettings.ListSortOrder = EntitiesListControl.ListSortOrder;
+
+            SettingsManager.Instance.Save(GetType(), _mySettings);
+        }
+
+        /// <summary>
+        /// Apply the saved settings 
+        /// </summary>
+        private void ApplySavedSettings()
+        {
+            LoadSettings();
+
+            EntitiesListControl.CheckEntities(_mySettings.CheckedEntityNames);
+            EntitiesListControl.FilterEntitiesList(_mySettings.EntityListFilter);
+            EntitiesListControl.SortEntitiesList(_mySettings.ListSortColumn, _mySettings.ListSortOrder);
+        }
+
+        /// <summary>
+        /// Helper class for the list of attributes
+        /// </summary>
+        private class AttributeListItem
         {
             public string Name { get; set; }
             public string SchemaName { get; set; }
+
+            public override string ToString()
+            {
+                return SchemaName.ToLower();
+            }
         }
         #endregion
 
@@ -589,7 +718,6 @@ namespace Fururez.XrmToolbox.KeyChecker
 
             return allowSave;
         }
-
 
         /// <summary>
         /// Validate the new Alternate Key inputs before saving
@@ -655,6 +783,7 @@ namespace Fururez.XrmToolbox.KeyChecker
             labelKeySchemaNameValue.Text = null;
             labelKeyNameValue.Text = null;
             labelKeyStatusValue.Text = null;
+            labelScheduledJobValue.Text = null;
 
             if (key != null) {
                 labelKeyNameValue.Text = CrmActions.GetLocalizedLabel(key.DisplayName, key.SchemaName);
@@ -663,6 +792,7 @@ namespace Fururez.XrmToolbox.KeyChecker
                 labelKeyStatusValue.Text = key.EntityKeyIndexStatus.ToString();
                 labelKeyIsManagedValue.Text = key.IsManaged.Value.ToString();
                 labelKeyMetadataIdValue.Text = key.MetadataId.Value.ToString("b");
+                labelScheduledJobValue.Text = (key.AsyncJob != null) ? ((EntityReference)key.AsyncJob).Name :  null;
             }
         }
 
@@ -701,16 +831,17 @@ namespace Fururez.XrmToolbox.KeyChecker
             }
         }
 
+        /// <summary>
+        /// Toggle the main UI controls while data loads
+        /// </summary>
+        /// <param name="enable"></param>
         private void ToggleMainUIControlsEnabled(bool enable)
         {
-
             ToggleNewKeyPaneEnabled(enable);
             UpdateKeysToolbar();
             ListViewKeyList.Enabled = enable;
             EntitiesListControl.Enabled = enable;
         }
-
         #endregion
-
     }
 }

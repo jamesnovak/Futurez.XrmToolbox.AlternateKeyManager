@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Windows.Forms;
 
-namespace Fururez.XrmToolbox.KeyChecker
+namespace Futurez.XrmToolbox
 {
     /// <summary>
     /// This class can help you to store settings for your plugin
@@ -18,5 +15,9 @@ namespace Fururez.XrmToolbox.KeyChecker
 
         public string EntityListFilter { get; set; }
         public List<string> CheckedEntityNames { get; set; }
+
+        public int ListSortColumn { get; set; }
+        public SortOrder ListSortOrder { get; set; }
+
     }
 }

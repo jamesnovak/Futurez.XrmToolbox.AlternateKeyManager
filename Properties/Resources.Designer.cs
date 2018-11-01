@@ -59,5 +59,50 @@ namespace Futurez.XrmToolbox.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to https://github.com/jamesnovak/Futurez.XrmToolbox.AlternateKeyManager.
+        /// </summary>
+        internal static string github_help_url {
+            get {
+                return ResourceManager.GetString("github_help_url", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Futurez.XrmToolbox.AlternateKeyManager.
+        /// </summary>
+        internal static string github_repo_name {
+            get {
+                return ResourceManager.GetString("github_repo_name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to jamesnovak.
+        /// </summary>
+        internal static string github_user {
+            get {
+                return ResourceManager.GetString("github_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to james@jamesnovak.com.
+        /// </summary>
+        internal static string paypal_email {
+            get {
+                return ResourceManager.GetString("paypal_email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thanks for the donation!.
+        /// </summary>
+        internal static string paypal_message {
+            get {
+                return ResourceManager.GetString("paypal_message", resourceCulture);
+            }
+        }
     }
 }
