@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Futurez.XrmToolbox.Controls, Version=1.2018.10.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Futurez.XrmToolbox.Controls.1.2018.10.3\lib\net47\Futurez.XrmToolbox.Controls.dll</HintPath>
+    <Reference Include="Futurez.XrmToolbox.Controls, Version=1.2018.11.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Futurez.XrmToolbox.Controls.1.2018.11.4\lib\net47\Futurez.XrmToolbox.Controls.dll</HintPath>
     </Reference>
     <Reference Include="McTools.Xrm.Connection, Version=1.2018.7.19, Culture=neutral, PublicKeyToken=96037217801d9658, processorArchitecture=MSIL">
       <HintPath>packages\MscrmTools.Xrm.Connection.1.2018.7.19\lib\net462\McTools.Xrm.Connection.dll</HintPath>
