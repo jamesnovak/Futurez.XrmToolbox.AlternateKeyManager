@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace Futurez.XrmToolbox
+namespace Futurez.XrmToolBox
 {
     /// <summary>
     /// This class can help you to store settings for your plugin

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Futurez.XrmToolbox.Properties {
+namespace Futurez.XrmToolBox.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Futurez.XrmToolbox.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Futurez.XrmToolbox.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Futurez.XrmToolBox.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace Futurez.XrmToolbox.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://github.com/jamesnovak/Futurez.XrmToolbox.AlternateKeyManager.
+        ///   Looks up a localized string similar to https://github.com/jamesnovak/Futurez.XrmToolBox.AlternateKeyManager.
         /// </summary>
         internal static string github_help_url {
             get {
@@ -70,7 +70,7 @@ namespace Futurez.XrmToolbox.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Futurez.XrmToolbox.AlternateKeyManager.
+        ///   Looks up a localized string similar to Futurez.XrmToolBox.AlternateKeyManager.
         /// </summary>
         internal static string github_repo_name {
             get {

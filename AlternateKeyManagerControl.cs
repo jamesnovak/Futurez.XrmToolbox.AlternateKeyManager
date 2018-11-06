@@ -14,9 +14,9 @@ using XrmToolBox.Extensibility.Interfaces;
 
 using McTools.Xrm.Connection;
 
-using Futurez.XrmToolbox.Controls;
+using Futurez.XrmToolBox.Controls;
 
-namespace Futurez.XrmToolbox
+namespace Futurez.XrmToolBox
 {
     public partial class AlternateKeyManagerControl : PluginControlBase, IStatusBarMessenger, IGitHubPlugin, IHelpPlugin, IPayPalPlugin
     {

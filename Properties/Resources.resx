@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="github_help_url" xml:space="preserve">
-    <value>https://github.com/jamesnovak/Futurez.XrmToolbox.AlternateKeyManager</value>
+    <value>https://github.com/jamesnovak/Futurez.XrmToolBox.AlternateKeyManager</value>
   </data>
   <data name="github_repo_name" xml:space="preserve">
-    <value>Futurez.XrmToolbox.AlternateKeyManager</value>
+    <value>Futurez.XrmToolBox.AlternateKeyManager</value>
   </data>
   <data name="github_user" xml:space="preserve">
     <value>jamesnovak</value>

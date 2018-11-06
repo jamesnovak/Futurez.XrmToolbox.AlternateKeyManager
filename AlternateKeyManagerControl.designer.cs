@@ -1,4 +1,4 @@
-﻿namespace Futurez.XrmToolbox
+﻿namespace Futurez.XrmToolBox
 {
     partial class AlternateKeyManagerControl
     {
@@ -35,7 +35,7 @@
             this.toolButtonSaveSettings = new System.Windows.Forms.ToolStripButton();
             this.toolButtonLoadSettings = new System.Windows.Forms.ToolStripButton();
             this.splitPanelsMain = new System.Windows.Forms.SplitContainer();
-            this.EntitiesListControl = new Futurez.XrmToolbox.Controls.EntitiesListControl();
+            this.EntitiesListControl = new Futurez.XrmToolBox.Controls.EntitiesListControl();
             this.tableLayoutMain = new System.Windows.Forms.TableLayoutPanel();
             this.ListViewKeyList = new System.Windows.Forms.ListView();
             this.colHeadKeyName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -62,7 +62,7 @@
             this.buttonCancelNew = new System.Windows.Forms.Button();
             this.buttonSaveNew = new System.Windows.Forms.Button();
             this.labelNewLoadEntities = new System.Windows.Forms.Label();
-            this.EntityDropDown = new Futurez.XrmToolbox.Controls.EntitiesDropdownControl();
+            this.EntityDropDown = new Futurez.XrmToolBox.Controls.EntitiesDropdownControl();
             this.labelNames = new System.Windows.Forms.Label();
             this.labelNewName = new System.Windows.Forms.Label();
             this.comboBoxPrefixes = new System.Windows.Forms.ComboBox();
@@ -161,10 +161,10 @@
             // EntitiesListControl
             // 
             this.EntitiesListControl.Checkboxes = true;
-            this.EntitiesListControl.ColumnDisplayMode = Futurez.XrmToolbox.Controls.ListViewColumnDisplayMode.Compact;
+            this.EntitiesListControl.ColumnDisplayMode = Futurez.XrmToolBox.Controls.ListViewColumnDisplayMode.Compact;
             this.EntitiesListControl.DisplayToolbar = true;
             this.EntitiesListControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.EntitiesListControl.EntityTypes = Futurez.XrmToolbox.Controls.EnumEntityTypes.BothCustomAndSystem;
+            this.EntitiesListControl.EntityTypes = Futurez.XrmToolBox.Controls.EnumEntityTypes.BothCustomAndSystem;
             this.EntitiesListControl.GroupByType = true;
             this.EntitiesListControl.Location = new System.Drawing.Point(0, 0);
             this.EntitiesListControl.Name = "EntitiesListControl";
@@ -173,7 +173,7 @@
             this.EntitiesListControl.Size = new System.Drawing.Size(333, 626);
             this.EntitiesListControl.TabIndex = 15;
             this.EntitiesListControl.LoadDataComplete += new System.EventHandler(this.EntitiesListControl_LoadDataComplete);
-            this.EntitiesListControl.SelectedItemChanged += new System.EventHandler<Futurez.XrmToolbox.Controls.EntitiesListControl.SelectedItemChangedEventArgs>(this.EntitiesListControl_SelectedItemChanged);
+            this.EntitiesListControl.SelectedItemChanged += new System.EventHandler<Futurez.XrmToolBox.Controls.EntitiesListControl.SelectedItemChangedEventArgs>(this.EntitiesListControl_SelectedItemChanged);
             this.EntitiesListControl.CheckedItemsChanged += new System.EventHandler(this.EntitiesListControl_CheckedItemsChanged);
             // 
             // tableLayoutMain
@@ -468,7 +468,7 @@
             this.EntityDropDown.Size = new System.Drawing.Size(309, 32);
             this.EntityDropDown.TabIndex = 19;
             this.EntityDropDown.LoadDataComplete += new System.EventHandler(this.EntityDropDown_LoadDataComplete);
-            this.EntityDropDown.SelectedItemChanged += new System.EventHandler<Futurez.XrmToolbox.Controls.EntitiesDropdownControl.SelectedItemChangedEventArgs>(this.EntityDropDown_SelectedItemChanged);
+            this.EntityDropDown.SelectedItemChanged += new System.EventHandler<Futurez.XrmToolBox.Controls.EntitiesDropdownControl.SelectedItemChangedEventArgs>(this.EntityDropDown_SelectedItemChanged);
             // 
             // labelNames
             // 
@@ -671,7 +671,7 @@
         private System.Windows.Forms.ToolStripButton toolButtonClose;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.SplitContainer splitPanelsMain;
-        private Futurez.XrmToolbox.Controls.EntitiesListControl EntitiesListControl;
+        private Futurez.XrmToolBox.Controls.EntitiesListControl EntitiesListControl;
         private System.Windows.Forms.TableLayoutPanel tableLayoutMain;
         private System.Windows.Forms.ListView ListViewKeyList;
         private System.Windows.Forms.ColumnHeader colHeadKeyName;
@@ -691,7 +691,7 @@
         private System.Windows.Forms.Button buttonCancelNew;
         private System.Windows.Forms.Button buttonSaveNew;
         private System.Windows.Forms.Label labelNewLoadEntities;
-        private Futurez.XrmToolbox.Controls.EntitiesDropdownControl EntityDropDown;
+        private Futurez.XrmToolBox.Controls.EntitiesDropdownControl EntityDropDown;
         private System.Windows.Forms.Label labelNames;
         private System.Windows.Forms.Label labelNewName;
         private System.Windows.Forms.ComboBox comboBoxPrefixes;
